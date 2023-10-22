@@ -22,7 +22,7 @@ type MessageToSend = {
 
 export const walletCode = Cell.fromBoc(
     Buffer.from(
-        'B5EE9C7241010101003D000076FF00DDD40120F90001D0D33FD30FD74CED44D0D3FFD70B0F20A4830FA90822C8CBFFCB0FC9ED5444301046BAF2A1F823BEF2A2F910F2A3F800ED552E766412',
+        'B5EE9C72010101010024000044DDD40120F90059D0D4D4ED44D0C705F2A120D0D70BFF4430F910F2A3F800ED54ED55',
         'hex'
     )
 )[0];
@@ -101,10 +101,19 @@ export class Wallet implements Contract {
                 .endCell();
         }
 
+        const chainData: Cell | undefined = await this.getData(provider);
+        const data: Cell = chainData ? chainData : this.init!.data;
+        let dataSlice = data.beginParse();
+        const key = dataSlice.loadBuffer(32);
+        const oldSeqno = dataSlice.loadUintBig(16) + 1n;
+        const seqno = oldSeqno > 0xffffn ? 0n : oldSeqno;
+
         const msgInner = beginCell()
-            .storeUint(Math.floor(Date.now() / 1000) + 3600, 64)
-            .storeUint((await this.getSeqno(provider))!, 16)
             .storeRef(actionsCell)
+            .storeRef(
+                beginCell().storeBuffer(key, 32).storeUint(seqno, 16).endCell()
+            )
+            .storeSlice(data.asSlice())
             .endCell();
         const hash = msgInner.hash();
         const signature = sign(hash, keypair.secretKey);
@@ -133,22 +142,28 @@ export class Wallet implements Contract {
         await this.sendActions(provider, [formSetCodeAction(code)], keypair);
     }
 
+    async getData(provider: ContractProvider): Promise<Cell | undefined> {
+        const state = (await provider.getState()).state;
+        if (state.type == 'active') {
+            return Cell.fromBoc(state.data!)[0];
+        }
+    }
+
     async getPublicKey(
         provider: ContractProvider
     ): Promise<Buffer | undefined> {
-        const state = (await provider.getState()).state;
-        if (state.type == 'active') {
-            const data = Cell.fromBoc(state.data!)[0].beginParse();
-            return data.loadBuffer(32);
+        let data = await this.getData(provider);
+        if (data) {
+            return data.beginParse().loadBuffer(32);
         }
     }
 
     async getSeqno(provider: ContractProvider): Promise<bigint | undefined> {
-        const state = (await provider.getState()).state;
-        if (state.type == 'active') {
-            const data = Cell.fromBoc(state.data!)[0].beginParse();
-            data.skip(256);
-            return data.loadUintBig(16);
+        let data = await this.getData(provider);
+        if (data) {
+            let slice = data.beginParse();
+            slice.skip(256);
+            return slice.loadUintBig(16);
         }
     }
 }

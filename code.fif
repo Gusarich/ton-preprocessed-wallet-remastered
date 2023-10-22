@@ -1,17 +1,16 @@
 "Asm.fif" include
 
 <{
-    SETCP0 IFNOTRET                         // msg
-    LDREF SWAP DUP HASHCU                   // sign msg' hash
-    SWAP CTOS 64 LDU 16 LDU PLDREF          // sign hash valid_until msg_seqno actions
-    c4 PUSH CTOS                            // sign hash valid_until msg_seqno actions c4s
-    256 LDU 16 PLDU                         // sign hash valid_until msg_seqno actions key seqno
-    DUP INC 16 PUSHPOW2 MOD s2 PUSH         // sign hash valid_until msg_seqno actions key seqno new_seqno key
-    NEWC 256 STU 16 STU ENDC c4 POP         // sign hash valid_until msg_seqno actions key seqno
-    s4 s3 s0 XCHG3 s4 s6 XCHG               // actions hash sign key valid_until msg_seqno seqno
-    EQUAL 33 THROWIFNOT                     // actions hash sign key valid_until
-    NOW GEQ 34 THROWIFNOT                   // actions hash sign key
-    CHKSIGNU 35 THROWIFNOT                  // actions
-    ACCEPT                                  // actions
-    c5 POP
+    IFNOTRET                                // msg
+    LDREF SWAP DUP HASHCU ROTREV            // hash sign msg_inner
+    CTOS LDREF LDREF                        // hash sign actions msg_new_c4 msg_c4s
+    c4 PUSH CTOS                            // hash sign actions msg_new_c4 msg_c4 c4s
+    SDEQ 33 THROWIFNOT                      // hash sign actions msg_new_c4
+    DUP CTOS 256 PLDU                       // hash sign actions msg_new_c4 key
+    s4 s3 s0 XCHG3                          // actions msg_new_c4 hash sign key
+    CHKSIGNU 35 THROWIFNOT                  // actions msg_new_c4
+    ACCEPT c4 POP c5 POP                    // 
 }>c
+
+dup hashB Bx. cr
+boc>B Bx. cr
