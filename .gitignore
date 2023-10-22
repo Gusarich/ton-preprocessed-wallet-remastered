@@ -1,23 +1,4 @@
-# IDE
 .idea
 .vscode
-
-# MacOS General
 .DS_Store
-.AppleDouble
-.LSOverride
-
-# Logs
-*.log
-
-# Build
-debot/build/*
-!debot/build/.gitkeep
-
-# Debug
-debot/test.fif
-debot/extmsg.fif
-debot/config.boc
-
-# NodeJS
 node_modules

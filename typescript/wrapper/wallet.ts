@@ -27,6 +27,10 @@ export const walletCode = Cell.fromBoc(
     )
 )[0];
 
+console.log(walletCode, walletCode.bits.length);
+
+process.exit();
+
 function formSendMsgAction(msg: MessageToSend, mode: number): Slice {
     let b = beginCell()
         .storeUint(0x18, 6)
