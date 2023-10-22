@@ -27,7 +27,3 @@ storage$_ pub_key:bits256 seq_no:uint16 = Storage;
 -   `33` - incorrect sequence number
 -   `34` - overdue
 -   `35` - invalid signature
-
-## TypeScript usage
-
-You can also use this wallet contract through TypeScript (or JavaScript) via wrapper from [`typescript/wrapper/wallet.ts`](./typescript/wrapper/wallet.ts)

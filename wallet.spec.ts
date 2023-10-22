@@ -1,13 +1,9 @@
-import {
-    Blockchain,
-    SandboxContract,
-    TreasuryContract,
-} from '@ton-community/sandbox';
-import { Cell, beginCell, toNano } from 'ton-core';
-import { Wallet, walletCode } from '../wrapper/wallet';
-import '@ton-community/test-utils';
-import { KeyPair, getSecureRandomBytes, keyPairFromSeed } from 'ton-crypto';
-import { randomAddress } from '@ton-community/test-utils';
+import { Blockchain, SandboxContract, TreasuryContract } from '@ton/sandbox';
+import { Cell, beginCell, toNano } from '@ton/core';
+import { Wallet, walletCode } from './wallet';
+import '@ton/test-utils';
+import { KeyPair, getSecureRandomBytes, keyPairFromSeed } from '@ton/crypto';
+import { randomAddress } from '@ton/test-utils';
 
 describe('Flooder', () => {
     let blockchain: Blockchain;

@@ -10,8 +10,8 @@ import {
     Slice,
     StateInit,
     storeStateInit,
-} from 'ton-core';
-import { KeyPair, sign } from 'ton-crypto';
+} from '@ton/core';
+import { KeyPair, sign } from '@ton/crypto';
 
 type MessageToSend = {
     recipient: Address;
@@ -26,10 +26,6 @@ export const walletCode = Cell.fromBoc(
         'hex'
     )
 )[0];
-
-console.log(walletCode, walletCode.bits.length);
-
-process.exit();
 
 function formSendMsgAction(msg: MessageToSend, mode: number): Slice {
     let b = beginCell()
