@@ -1,5 +1,12 @@
 import { Blockchain, SandboxContract, TreasuryContract } from '@ton/sandbox';
-import { Cell, beginCell, toNano } from '@ton/core';
+import {
+    Cell,
+    TransactionComputePhase,
+    TransactionComputeVm,
+    TransactionDescriptionGeneric,
+    beginCell,
+    toNano,
+} from '@ton/core';
 import { Wallet, walletCode } from './wallet';
 import '@ton/test-utils';
 import { KeyPair, getSecureRandomBytes, keyPairFromSeed } from '@ton/crypto';
@@ -63,6 +70,17 @@ describe('Flooder', () => {
             to: addr,
             value: toNano('0.01'),
         });
+
+        console.log(
+            `Gas consumption: ${
+                (
+                    (
+                        result.transactions[0]
+                            .description as TransactionDescriptionGeneric
+                    ).computePhase as TransactionComputeVm
+                ).gasUsed
+            }`
+        );
 
         result = await wallet.sendTransfers(keypair, [
             {

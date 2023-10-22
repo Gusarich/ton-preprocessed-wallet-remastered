@@ -5,10 +5,10 @@
     LDREF SWAP DUP HASHCU ROTREV            // hash sign msg_inner
     CTOS LDREF LDREF                        // hash sign actions msg_new_c4 msg_c4s
     c4 PUSH CTOS                            // hash sign actions msg_new_c4 msg_c4 c4s
-    SDEQ 33 THROWIFNOT                      // hash sign actions msg_new_c4
+    SDEQ IFNOTRET                           // hash sign actions msg_new_c4
     DUP CTOS 256 PLDU                       // hash sign actions msg_new_c4 key
     s4 s3 s0 XCHG3                          // actions msg_new_c4 hash sign key
-    CHKSIGNU 35 THROWIFNOT                  // actions msg_new_c4
+    CHKSIGNU IFNOTRET                       // actions msg_new_c4
     ACCEPT c4 POP c5 POP                    // 
 }>c
 
