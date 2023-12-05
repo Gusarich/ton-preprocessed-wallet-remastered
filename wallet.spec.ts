@@ -28,16 +28,21 @@ describe('Flooder', () => {
 
         deployer = await blockchain.treasury('deployer');
 
-        const deployResult = await wallet.sendDeploy(
-            deployer.getSender(),
-            toNano('0.05')
-        );
-
-        expect(deployResult.transactions).toHaveTransaction({
-            from: deployer.address,
+        await deployer.send({
             to: wallet.address,
-            deploy: true,
+            value: toNano('0.05'),
+            bounce: false,
+        });
+        const deployResult = await wallet.sendTransfers(keypair, [
+            {
+                recipient: deployer.address,
+                value: 0n,
+            },
+        ]);
+        expect(deployResult.transactions).toHaveTransaction({
+            on: wallet.address,
             success: true,
+            deploy: true,
         });
     });
 
@@ -57,7 +62,7 @@ describe('Flooder', () => {
 
     it('should retrieve correct pubkey and seqno', async () => {
         expect(await wallet.getPublicKey()).toEqual(keypair.publicKey);
-        expect(await wallet.getSeqno()).toEqual(0n);
+        expect(await wallet.getSeqno()).toEqual(1n);
     });
 
     it('should send simple transfers', async () => {
@@ -124,13 +129,13 @@ describe('Flooder', () => {
     it('should update code', async () => {
         let result = await wallet.sendSetCode(keypair, walletCode);
         expect(result.transactions).toHaveTransaction({
-            to: wallet.address,
+            on: wallet.address,
             success: true,
         });
 
         result = await wallet.sendSetCode(keypair, Cell.EMPTY);
         expect(result.transactions).toHaveTransaction({
-            to: wallet.address,
+            on: wallet.address,
             success: true,
         });
     });

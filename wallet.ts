@@ -5,7 +5,6 @@ import {
     Contract,
     contractAddress,
     ContractProvider,
-    Sender,
     SendMode,
     Slice,
     StateInit,
@@ -78,14 +77,6 @@ export class Wallet implements Contract {
             .endCell();
         const init = { code: walletCode, data };
         return new Wallet(contractAddress(workchain, init), init);
-    }
-
-    async sendDeploy(provider: ContractProvider, via: Sender, value: bigint) {
-        await provider.internal(via, {
-            value,
-            sendMode: SendMode.PAY_GAS_SEPARATELY,
-            body: Cell.EMPTY,
-        });
     }
 
     private async sendActions(
